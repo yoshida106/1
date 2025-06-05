@@ -1,0 +1,16 @@
+#include <iostream>
+
+int main() {
+    int number;
+
+    std::cout << "Введіть ціле число: ";
+    std::cin >> number;
+
+    if (number % 2 == 0) {
+        std::cout << "Ви ввели парне число." << std::endl;
+    } else {
+        std::cout << "Ви ввели непарне число." << std::endl;
+    }
+
+    return 0;
+}
