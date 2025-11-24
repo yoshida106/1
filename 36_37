@@ -1,0 +1,146 @@
+using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.Generic;
+
+public class CardsStore
+{
+    private readonly string _connectionString = "Data Source=loyalty.db";
+
+    public CardsStore()
+    {
+        using (var conn = new SqliteConnection(_connectionString))
+        {
+            conn.Open();
+
+            string createTable = @"
+                CREATE TABLE IF NOT EXISTS Cards (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    StoreName TEXT NOT NULL,
+                    CardNumber TEXT NOT NULL,
+                    Type TEXT NOT NULL
+                );";
+
+            using (var cmd = new SqliteCommand(createTable, conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
+    // CREATE
+    public void Create(Card card)
+    {
+        using (var conn = new SqliteConnection(_connectionString))
+        {
+            conn.Open();
+            string insert = @"INSERT INTO Cards (StoreName, CardNumber, Type)
+                              VALUES (@store, @num, @type)";
+
+            using (var cmd = new SqliteCommand(insert, conn))
+            {
+                cmd.Parameters.AddWithValue("@store", card.StoreName);
+                cmd.Parameters.AddWithValue("@num", card.CardNumber);
+                cmd.Parameters.AddWithValue("@type", card.Type);
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
+    // READ
+    public Card GetCardById(int cardId)
+    {
+        using (var conn = new SqliteConnection(_connectionString))
+        {
+            conn.Open();
+            string select = "SELECT * FROM Cards WHERE Id = @id";
+
+            using (var cmd = new SqliteCommand(select, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", cardId);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new Card
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            StoreName = reader.GetString(reader.GetOrdinal("StoreName")),
+                            CardNumber = reader.GetString(reader.GetOrdinal("CardNumber")),
+                            Type = reader.GetString(reader.GetOrdinal("Type"))
+                        };
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // READ ALL
+    public List<Card> GetAllCards()
+    {
+        List<Card> cards = new();
+
+        using (var conn = new SqliteConnection(_connectionString))
+        {
+            conn.Open();
+            string select = "SELECT * FROM Cards";
+
+            using (var cmd = new SqliteCommand(select, conn))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    cards.Add(new Card
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        StoreName = reader.GetString(reader.GetOrdinal("StoreName")),
+                        CardNumber = reader.GetString(reader.GetOrdinal("CardNumber")),
+                        Type = reader.GetString(reader.GetOrdinal("Type"))
+                    });
+                }
+            }
+        }
+        return cards;
+    }
+
+    // UPDATE
+    public void Update(Card card)
+    {
+        using (var conn = new SqliteConnection(_connectionString))
+        {
+            conn.Open();
+
+            string update = @"UPDATE Cards
+                              SET StoreName = @store, CardNumber = @num, Type = @type
+                              WHERE Id = @id";
+
+            using (var cmd = new SqliteCommand(update, conn))
+            {
+                cmd.Parameters.AddWithValue("@store", card.StoreName);
+                cmd.Parameters.AddWithValue("@num", card.CardNumber);
+                cmd.Parameters.AddWithValue("@type", card.Type);
+                cmd.Parameters.AddWithValue("@id", card.Id);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
+    // DELETE
+    public void Delete(int cardId)
+    {
+        using (var conn = new SqliteConnection(_connectionString))
+        {
+            conn.Open();
+
+            string delete = "DELETE FROM Cards WHERE Id = @id";
+
+            using (var cmd = new SqliteCommand(delete, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", cardId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+}
