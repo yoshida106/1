@@ -1,0 +1,199 @@
+using System;
+
+namespace TemplateMethodCalculator
+{
+    // ------------------------ БАЗОВИЙ КЛАС ------------------------
+    abstract class Operation
+    {
+        // Шаблонний метод — незмінний алгоритм
+        public double Calculate(double a, double b)
+        {
+            Validate(a, b);               // 1. Перевірка аргументів
+            double result = Compute(a, b); // 2. Розрахунок
+            Log(a, b, result);             // 3. Логування
+            return result;
+        }
+
+        // Віртуальна перевірка (може бути перевизначена, але не обов’язково)
+        protected virtual void Validate(double a, double b)
+        {
+            // За замовчуванням не робить нічого
+        }
+
+        // Абстрактний метод — обов’язкове перевизначення
+        protected abstract double Compute(double a, double b);
+
+        // Віртуальне логування, можна перевизначати
+        protected virtual void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"Operation: {a} ? {b} = {result}");
+        }
+    }
+
+    // ------------------------ ДОДАВАННЯ ------------------------
+    class Sum : Operation
+    {
+        protected override double Compute(double a, double b) => a + b;
+
+        protected override void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"{a} + {b} = {result}");
+        }
+    }
+
+    // ------------------------ МНОЖЕННЯ ------------------------
+    class Multiply : Operation
+    {
+        protected override double Compute(double a, double b) => a * b;
+
+        protected override void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"{a} * {b} = {result}");
+        }
+    }
+
+    // ------------------------ ДІЛЕННЯ ------------------------
+    class Divide : Operation
+    {
+        protected override void Validate(double a, double b)
+        {
+            if (b == 0)
+                throw new ArgumentException("Помилка: ділення на нуль!");
+        }
+
+        protected override double Compute(double a, double b) => a / b;
+
+        protected override void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"{a} / {b} = {result}");
+        }
+    }
+
+    // ------------------------ ДЕМОНСТРАЦІЯ ------------------------
+    class Program
+    {
+        static void Main()
+        {
+            Operation sum = new Sum();
+            Operation multiply = new Multiply();
+            Operation divide = new Divide();
+
+            Console.WriteLine("----- Додавання -----");
+            sum.Calculate(5, 3);
+
+            Console.WriteLine("\n----- Множення -----");
+            multiply.Calculate(4, 2);
+
+            Console.WriteLine("\n----- Ділення -----");
+            try
+            {
+                divide.Calculate(10, 0); // викличе помилку
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            divide.Calculate(10, 2);
+        }
+    }
+}using System;
+
+namespace TemplateMethodCalculator
+{
+    // ------------------------ БАЗОВИЙ КЛАС ------------------------
+    abstract class Operation
+    {
+        // Шаблонний метод — незмінний алгоритм
+        public double Calculate(double a, double b)
+        {
+            Validate(a, b);               // 1. Перевірка аргументів
+            double result = Compute(a, b); // 2. Розрахунок
+            Log(a, b, result);             // 3. Логування
+            return result;
+        }
+
+        // Віртуальна перевірка (може бути перевизначена, але не обов’язково)
+        protected virtual void Validate(double a, double b)
+        {
+            // За замовчуванням не робить нічого
+        }
+
+        // Абстрактний метод — обов’язкове перевизначення
+        protected abstract double Compute(double a, double b);
+
+        // Віртуальне логування, можна перевизначати
+        protected virtual void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"Operation: {a} ? {b} = {result}");
+        }
+    }
+
+    // ------------------------ ДОДАВАННЯ ------------------------
+    class Sum : Operation
+    {
+        protected override double Compute(double a, double b) => a + b;
+
+        protected override void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"{a} + {b} = {result}");
+        }
+    }
+
+    // ------------------------ МНОЖЕННЯ ------------------------
+    class Multiply : Operation
+    {
+        protected override double Compute(double a, double b) => a * b;
+
+        protected override void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"{a} * {b} = {result}");
+        }
+    }
+
+    // ------------------------ ДІЛЕННЯ ------------------------
+    class Divide : Operation
+    {
+        protected override void Validate(double a, double b)
+        {
+            if (b == 0)
+                throw new ArgumentException("Помилка: ділення на нуль!");
+        }
+
+        protected override double Compute(double a, double b) => a / b;
+
+        protected override void Log(double a, double b, double result)
+        {
+            Console.WriteLine($"{a} / {b} = {result}");
+        }
+    }
+
+    // ------------------------ ДЕМОНСТРАЦІЯ ------------------------
+    class Program
+    {
+        static void Main()
+        {
+            Operation sum = new Sum();
+            Operation multiply = new Multiply();
+            Operation divide = new Divide();
+
+            Console.WriteLine("----- Додавання -----");
+            sum.Calculate(5, 3);
+
+            Console.WriteLine("\n----- Множення -----");
+            multiply.Calculate(4, 2);
+
+            Console.WriteLine("\n----- Ділення -----");
+            try
+            {
+                divide.Calculate(10, 0); // викличе помилку
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            divide.Calculate(10, 2);
+        }
+    }
+}
