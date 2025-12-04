@@ -1,0 +1,113 @@
+using System;
+using System.Collections.Generic;
+
+namespace GenericDictionaryDemo
+{
+    // Узагальнений клас з runtime-перевіркою "простого" типу ключа
+    public class MyDictionary<TKey, TValue>
+    {
+        private readonly Dictionary<TKey, TValue> storage = new();
+
+        // Статичний конструктор — виконається при першому використанні типу
+        static MyDictionary()
+        {
+            if (!IsSimpleKeyType(typeof(TKey)))
+            {
+                throw new InvalidOperationException(
+                    $"Тип ключа '{typeof(TKey).FullName}' не належить до дозволених \"простих\" типів.");
+            }
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            storage[key] = value;
+        }
+
+        public void Remove(TKey key)
+        {
+            if (!storage.Remove(key))
+            {
+                // Можна не кидати помилку, але для наочності повідомимо
+                throw new KeyNotFoundException($"Ключ '{key}' не знайдено для видалення.");
+            }
+        }
+
+        public TValue Get(TKey key)
+        {
+            if (storage.TryGetValue(key, out var value))
+                return value;
+
+            throw new KeyNotFoundException($"Ключ '{key}' не знайдено.");
+        }
+
+        // Допоміжний метод — визначає, чи є тип "простим" (примітив, string, decimal, enum)
+        private static bool IsSimpleKeyType(Type t)
+        {
+            if (t.IsPrimitive) return true;      // int, bool, byte, double, ...
+            if (t == typeof(string)) return true;
+            if (t == typeof(decimal)) return true; // decimal не вважається IsPrimitive
+            if (t.IsEnum) return true;           // дозволяємо enum
+            // Можна додати інші допустимі типи за потреби
+            return false;
+        }
+    }
+
+    // Демонстрація роботи класу
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("----- Приклад 1: int -> string -----");
+            var dict1 = new MyDictionary<int, string>();
+            dict1.Add(1, "Один");
+            dict1.Add(2, "Два");
+            Console.WriteLine(dict1.Get(1)); // Один
+            Console.WriteLine(dict1.Get(2)); // Два
+            dict1.Remove(1);
+            try
+            {
+                Console.WriteLine(dict1.Get(1)); // кидатиме KeyNotFoundException
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine("Помилка: " + ex.Message);
+            }
+
+            Console.WriteLine("\n----- Приклад 2: string -> double -----");
+            var dict2 = new MyDictionary<string, double>();
+            dict2.Add("pi", 3.14159);
+            dict2.Add("e", 2.71828);
+            Console.WriteLine($"pi = {dict2.Get("pi")}");
+            Console.WriteLine($"e  = {dict2.Get("e")}");
+
+            Console.WriteLine("\n----- Приклад 3: enum -> custom class -----");
+            var dict3 = new MyDictionary<Status, Person>();
+            dict3.Add(Status.Active, new Person("Іван", 21));
+            dict3.Add(Status.Inactive, new Person("Олена", 34));
+            Console.WriteLine(dict3.Get(Status.Active));
+            Console.WriteLine(dict3.Get(Status.Inactive));
+
+            Console.WriteLine("\n----- Спроба використати складний тип ключа (повинна бути помилка) -----");
+            try
+            {
+                // DateTime IsValueType (struct) але не примітив — ми не дозволяємо його
+                var bad = new MyDictionary<DateTime, string>(); // тут кинеться InvalidOperationException
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("Очікувана помилка: " + ex.Message);
+            }
+        }
+    }
+
+    // Приклад допоміжного enum і класу для демонстрації
+    enum Status { Active, Inactive }
+
+    class Person
+    {
+        public string Name { get; }
+        public int Age { get; }
+        public Person(string name, int age) { Name = name; Age = age; }
+        public override string ToString() => $"{Name}, {Age} років";
+    }
+}
