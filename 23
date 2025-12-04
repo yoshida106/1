@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма реєстрації</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h3 class="text-center mb-4">Реєстрація користувача</h3>
+
+        <form id="regForm">
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" id="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" required>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" id="signinBtn" class="btn btn-primary">Sign In</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+
+    $("#signinBtn").click(function () {
+
+        // зчитування значень з форми
+        let username = $("#username").val();
+        let email = $("#email").val();
+        let password = $("#password").val();
+
+        // збереження в змінні (виводимо в консоль)
+        console.log("Username:", username);
+        console.log("Email:", email);
+        console.log("Password:", password);
+
+        // очищення форми
+        $("#regForm")[0].reset();
+    });
+
+});
+</script>
+
+</body>
+</html>
