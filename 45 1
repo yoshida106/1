@@ -1,0 +1,58 @@
+using System;
+
+namespace DateRangeApp
+{
+    // ------------------------ ValidationException ------------------------
+    public class ValidationException : Exception
+    {
+        public ValidationException(string message) : base(message) { }
+    }
+
+
+    // ------------------------ DateFrame ------------------------
+    public class DateFrame
+    {
+        public DateTime FromDate { get; }
+        public DateTime ToDate { get; }
+
+        // Конструктор без параметрів — мінімальна та максимальна дати
+        public DateFrame()
+        {
+            FromDate = DateTime.MinValue;
+            ToDate = DateTime.MaxValue;
+        }
+
+        // Конструктор з параметрами-рядками
+        public DateFrame(string fromDateStr, string toDateStr)
+        {
+            DateTime from;
+            DateTime to;
+
+            try
+            {
+                from = DateTime.Parse(fromDateStr);
+            }
+            catch
+            {
+                throw new FormatException("Аргумент 'fromDateStr' має невірний формат дати");
+            }
+
+            try
+            {
+                to = DateTime.Parse(toDateStr);
+            }
+            catch
+            {
+                throw new FormatException("Аргумент 'toDateStr' має невірний формат дати");
+            }
+
+            if (from >= to)
+            {
+                throw new ValidationException("Невірний діапазон дат");
+            }
+
+            FromDate = from;
+            ToDate = to;
+        }
+    }
+}

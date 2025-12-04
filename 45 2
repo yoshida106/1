@@ -1,0 +1,62 @@
+using System;
+
+namespace DateRangeApp
+{
+    class Program
+    {
+        static void Main()
+        {
+            DateFrame frame = null;
+
+            while (frame == null)
+            {
+                Console.Write("Введіть дату початку діапазону: ");
+                string fromStr = Console.ReadLine();
+
+                Console.Write("Введіть дату кінця діапазону: ");
+                string toStr = Console.ReadLine();
+
+                try
+                {
+                    frame = new DateFrame(fromStr, toStr);
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Помилка формату даних");
+                    Console.WriteLine(ex.Message);
+                }
+                catch (ValidationException ex)
+                {
+                    Console.WriteLine("Помилка перевірки даних");
+                    Console.WriteLine(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Невідома помилка");
+                    Console.WriteLine(ex.Message);
+                }
+
+                if (frame == null)
+                {
+                    Console.WriteLine("Спробуйте ще раз.\n");
+                }
+            }
+
+            // ------------------- Аналіз діапазону після введення -------------------
+            DateTime now = DateTime.Now;
+
+            if (frame.ToDate < now)
+            {
+                Console.WriteLine("Це було в минулому");
+            }
+            else if (frame.FromDate > now)
+            {
+                Console.WriteLine("Це буде в майбутньому");
+            }
+            else
+            {
+                Console.WriteLine("Це відбувається зараз");
+            }
+        }
+    }
+}
