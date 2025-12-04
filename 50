@@ -1,0 +1,75 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
+class Program
+{
+    static int[] fullArray = new int[1000];
+    static List<int> evenList = new List<int>();
+    static List<int> oddList = new List<int>();
+
+    static int currentIndex = 0; // спільний індекс для потоків
+    static object lockObj = new object(); // об'єкт для синхронізації
+
+    static void Main()
+    {
+        Random rand = new Random();
+        for (int i = 0; i < fullArray.Length; i++)
+            fullArray[i] = rand.Next(1, 11); // числа від 1 до 10
+
+        // Створюємо 3 потоки
+        Thread[] threads = new Thread[3];
+        for (int i = 0; i < threads.Length; i++)
+        {
+            threads[i] = new Thread(ProcessArray);
+            threads[i].Start();
+        }
+
+        // Очікуємо завершення потоків
+        foreach (Thread t in threads)
+            t.Join();
+
+        // Виводимо результати
+        Console.WriteLine("Парні числа:");
+        Console.WriteLine(string.Join(", ", evenList));
+
+        Console.WriteLine("\nНепарні числа:");
+        Console.WriteLine(string.Join(", ", oddList));
+    }
+
+    static void ProcessArray()
+    {
+        while (true)
+        {
+            int index;
+            int value;
+
+            // Захищений блок для отримання наступного елемента
+            lock (lockObj)
+            {
+                if (currentIndex >= fullArray.Length)
+                    break;
+
+                index = currentIndex;
+                value = fullArray[currentIndex];
+                currentIndex++;
+            }
+
+            // Додаємо значення у відповідний список
+            if (value % 2 == 0)
+            {
+                lock (lockObj)
+                {
+                    evenList.Add(value);
+                }
+            }
+            else
+            {
+                lock (lockObj)
+                {
+                    oddList.Add(value);
+                }
+            }
+        }
+    }
+}
