@@ -1,0 +1,48 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int number = 0;
+        bool isValid = false;
+
+        while (!isValid)
+        {
+            Console.Write("Введіть число: ");
+            string input = Console.ReadLine();
+
+            try
+            {
+                // Перевірка чи є значення числом (без TryParse)
+                // Використовуємо Convert.ToInt64, щоб спочатку "вмістити" навіть великі значення
+                long temp = Convert.ToInt64(input);
+
+                // Тепер перевіряємо межі Int32
+                if (temp > int.MaxValue || temp < int.MinValue)
+                {
+                    Console.WriteLine("Значення виходить за межі діапазону Int32.");
+                }
+                else
+                {
+                    number = (int)temp;
+                    isValid = true;
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Введене значення не є числом.");
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("Значення виходить за межі допустимого діапазону.");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Сталась помилка. Спробуйте ще раз.");
+            }
+        }
+
+        Console.WriteLine($"Коректне число: {number}");
+    }
+}
