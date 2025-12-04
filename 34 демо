@@ -1,0 +1,36 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Робота з масивом int
+        int[] intArray = { 1, 2, 3, 4, 5 };
+        ArrayWorker<int> intWorker = new ArrayWorker<int>(intArray);
+
+        Console.WriteLine("Масив int:");
+        intWorker.Print();
+
+        Console.WriteLine("Індекс елемента 3: " + intWorker.FindIndex(3));
+
+        intWorker.Reverse();
+        Console.WriteLine("Після реверсу:");
+        intWorker.Print();
+
+
+        // Робота з масивом string
+        string[] strArray = { "apple", "banana", "cherry" };
+        ArrayWorker<string> strWorker = new ArrayWorker<string>(strArray);
+
+        Console.WriteLine("\nМасив string:");
+        strWorker.Print();
+
+        Console.WriteLine("Індекс \"banana\": " + strWorker.FindIndex("banana"));
+
+        strWorker.Reverse();
+        Console.WriteLine("Після реверсу:");
+        strWorker.Print();
+
+        Console.ReadKey();
+    }
+}
