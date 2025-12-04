@@ -1,0 +1,67 @@
+using System;
+using System.Threading;
+
+class Program
+{
+    static int[] numbers;
+    static long[] partialSums;
+
+    static void Main()
+    {
+        int arrayLength = 20;
+        int threadCount = 4; // кількість потоків
+        numbers = new int[arrayLength];
+        partialSums = new long[threadCount];
+
+        Random rand = new Random();
+        for (int i = 0; i < numbers.Length; i++)
+            numbers[i] = rand.Next(1, 101); // випадкові числа від 1 до 100
+
+        // Виводимо масив
+        Console.WriteLine("Масив:");
+        Console.WriteLine(string.Join(", ", numbers));
+
+        // ----------------- Обчислення в кілька потоків -----------------
+        Thread[] threads = new Thread[threadCount];
+        int chunkSize = arrayLength / threadCount;
+
+        for (int t = 0; t < threadCount; t++)
+        {
+            int threadIndex = t; // локальна копія
+            threads[t] = new Thread(() =>
+            {
+                int start = threadIndex * chunkSize;
+                int end = (threadIndex == threadCount - 1) ? numbers.Length : start + chunkSize;
+                long sum = 0;
+                for (int i = start; i < end; i++)
+                    sum += numbers[i];
+
+                partialSums[threadIndex] = sum;
+            });
+
+            threads[t].Start();
+        }
+
+        // Чекаємо завершення всіх потоків
+        foreach (var thread in threads)
+            thread.Join();
+
+        // Обчислюємо суму всіх часткових сум
+        long totalSumParallel = 0;
+        foreach (var s in partialSums)
+            totalSumParallel += s;
+
+        Console.WriteLine($"\nСума елементів масиву (декілька потоків): {totalSumParallel}");
+
+        // ----------------- Перевірка одним потоком -----------------
+        long totalSumSingle = 0;
+        for (int i = 0; i < numbers.Length; i++)
+            totalSumSingle += numbers[i];
+
+        Console.WriteLine($"Сума елементів масиву (один потік): {totalSumSingle}");
+
+        Console.WriteLine(totalSumParallel == totalSumSingle
+            ? "Результати збігаються."
+            : "Результати не збігаються!");
+    }
+}
