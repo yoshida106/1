@@ -1,0 +1,42 @@
+using System;
+
+class Message
+{
+    public void Show()
+    {
+        Console.WriteLine("Message.Show()");
+    }
+
+    public virtual void Display()
+    {
+        Console.WriteLine("Message.Display()");
+    }
+}
+
+class EmailMessage : Message
+{
+    // new — приховує метод базового класу (раннє зв’язування)
+    public new void Show()
+    {
+        Console.WriteLine("EmailMessage.Show()");
+    }
+
+    // override — заміщує віртуальний метод (пізнє зв’язування)
+    public override void Display()
+    {
+        Console.WriteLine("EmailMessage.Display()");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Message msg = new EmailMessage();
+
+        msg.Show();     // Викликається Message.Show() → раннє зв’язування
+        msg.Display();  // Викликається EmailMessage.Display() → пізнє зв’язування
+
+        Console.ReadLine();
+    }
+}
